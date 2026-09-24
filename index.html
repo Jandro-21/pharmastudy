@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Guía Rápida de Medicamentos - Estudio</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 12px;
+            color: #2c3e50;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        header {
+            text-align: center;
+            margin-top: 10px;
+            margin-bottom: 20px;
+            padding: 0 10px;
+        }
+
+        h1 {
+            margin: 0;
+            color: #1a252f;
+            font-size: clamp(1.4em, 5vw, 2em);
+        }
+
+        p.subtitle {
+            color: #7f8c8d;
+            margin-top: 4px;
+            font-size: clamp(0.85em, 3vw, 1em);
+        }
+
+        /* --- Panel de Repaso / Modo Aleatorio --- */
+        .random-container {
+            max-width: 600px;
+            margin: 0 auto 25px auto;
+            text-align: center;
+            padding: 0 5px;
+        }
+
+        .btn-random {
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            font-size: 1em;
+            font-weight: 700;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(39, 174, 96, 0.3);
+            transition: transform 0.15s ease, background-color 0.15s ease;
+            width: 100%;
+            max-width: 320px;
+            touch-action: manipulation;
+        }
+
+        .btn-random:active {
+            transform: scale(0.97);
+            background-color: #219150;
+        }
+
+        .random-card {
+            display: none;
+            background-color: #ffffff;
+            border: 2px solid #27ae60;
+            border-radius: 12px;
+            padding: 20px 16px;
+            margin-top: 16px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            animation: fadeIn 0.25s ease-out;
+            position: relative;
+            text-align: left;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .random-card .categoria-tag {
+            display: inline-block;
+            background-color: #e8f8f5;
+            color: #16a085;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: bold;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .random-card .med-title {
+            font-size: 1.35em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 6px;
+            padding-right: 25px;
+        }
+
+        .random-card .med-uso {
+            font-size: 1em;
+            color: #7f8c8d;
+            line-height: 1.4;
+        }
+
+        .btn-close {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: #f0f3f4;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            font-size: 1.1em;
+            color: #7f8c8d;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-close:active {
+            background-color: #e74c3c;
+            color: #ffffff;
+        }
+
+        /* --- Grid Responsivo --- */
+        .grid-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.04);
+            border: 1px solid #e1e8ed;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-header {
+            background-color: #34495e;
+            color: #ffffff;
+            padding: 12px 14px;
+            font-size: 1em;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            user-select: none;
+        }
+
+        .card-body {
+            padding: 8px 14px;
+            flex-grow: 1;
+        }
+
+        .med-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .med-item {
+            padding: 10px 0;
+            border-bottom: 1px solid #ecf0f1;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9em;
+        }
+
+        .med-item:last-child {
+            border-bottom: none;
+        }
+
+        .med-nombre {
+            font-weight: 600;
+            color: #2c3e50;
+            flex-shrink: 0;
+            max-width: 55%;
+            word-wrap: break-word;
+        }
+
+        .med-indicacion {
+            color: #7f8c8d;
+            font-size: 0.88em;
+            text-align: right;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 4px;
+        }
+
+        .arrow {
+            color: #bdc3c7;
+            font-size: 0.9em;
+        }
+
+        /* --- Media Queries --- */
+        @media (min-width: 600px) {
+            body {
+                padding: 20px;
+            }
+
+            .grid-container {
+                grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+                gap: 20px;
+            }
+
+            .random-card {
+                padding: 20px;
+            }
+
+            .med-item {
+                font-size: 0.95em;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>📚 Guía Rápida de Medicamentos</h1>
+        <p class="subtitle">Consulta por categorías e indicaciones de uso</p>
+    </header>
+
+    <!-- Sección de Medicamento Aleatorio -->
+    <div class="random-container">
+        <button class="btn-random" onclick="obtenerMedicamentoAleatorio()">🎲 Medicamento Aleatorio</button>
+        
+        <div class="random-card" id="tarjeta-random">
+            <button class="btn-close" onclick="cerrarRandom()">✕</button>
+            <span class="categoria-tag" id="random-cat"></span>
+            <div class="med-title" id="random-nombre"></div>
+            <div class="med-uso">Sirve para: <strong id="random-uso" style="color: #27ae60;"></strong></div>
+        </div>
+    </div>
+
+    <!-- Grid con todas las categorías -->
+    <div class="grid-container" id="contenedor-tarjetas"></div>
+
+    <script>
+        const datosFarmacia = [
+            {
+                categoria: "Colesterol",
+                icono: "💊",
+                medicamentos: [
+                    { nombre: "Atorvastatina", para_que_sirve: "colesterol" },
+                    { nombre: "Rosuvastatina", para_que_sirve: "colesterol" },
+                    { nombre: "Simvastatina", para_que_sirve: "colesterol" },
+                    { nombre: "Pravastatina", para_que_sirve: "colesterol" },
+                    { nombre: "Ezetimiba", para_que_sirve: "colesterol" }
+                ]
+            },
+            {
+                categoria: "Tensión y corazón",
+                icono: "❤️",
+                medicamentos: [
+                    { nombre: "Enalapril", para_que_sirve: "hipertensión" },
+                    { nombre: "Ramipril", para_que_sirve: "hipertensión" },
+                    { nombre: "Lisinopril", para_que_sirve: "hipertensión" },
+                    { nombre: "Losartán", para_que_sirve: "hipertensión" },
+                    { nombre: "Valsartán", para_que_sirve: "hipertensión" },
+                    { nombre: "Candesartán", para_que_sirve: "hipertensión" },
+                    { nombre: "Amlodipino", para_que_sirve: "hipertensión" },
+                    { nombre: "Bisoprolol", para_que_sirve: "hipertensión / corazón" },
+                    { nombre: "Atenolol", para_que_sirve: "hipertensión / corazón" },
+                    { nombre: "Furosemida", para_que_sirve: "diurético / retención" },
+                    { nombre: "Hidroclorotiazida", para_que_sirve: "hipertensión / diurético" }
+                ]
+            },
+            {
+                categoria: "Diabetes",
+                icono: "🩺",
+                medicamentos: [
+                    { nombre: "Metformina", para_que_sirve: "diabetes" },
+                    { nombre: "Gliclazida", para_que_sirve: "diabetes" },
+                    { nombre: "Glimepirida", para_que_sirve: "diabetes" },
+                    { nombre: "Empagliflozina", para_que_sirve: "diabetes" },
+                    { nombre: "Dapagliflozina", para_que_sirve: "diabetes" },
+                    { nombre: "Sitagliptina", para_que_sirve: "diabetes" },
+                    { nombre: "Semaglutida", para_que_sirve: "diabetes" },
+                    { nombre: "Insulina", para_que_sirve: "diabetes" }
+                ]
+            },
+            {
+                categoria: "Tiroides",
+                icono: "🦋",
+                medicamentos: [
+                    { nombre: "Levotiroxina", para_que_sirve: "hipotiroidismo" },
+                    { nombre: "Tiamazol", para_que_sirve: "hipertiroidismo" }
+                ]
+            },
+            {
+                categoria: "Estómago y digestivo",
+                icono: "🔥",
+                medicamentos: [
+                    { nombre: "Omeprazol", para_que_sirve: "acidez / reflujo" },
+                    { nombre: "Pantoprazol", para_que_sirve: "acidez / reflujo" },
+                    { nombre: "Esomeprazol", para_que_sirve: "acidez / reflujo" },
+                    { nombre: "Lansoprazol", para_que_sirve: "acidez / reflujo" },
+                    { nombre: "Famotidina", para_que_sirve: "acidez / reflujo" },
+                    { nombre: "Almagato", para_que_sirve: "acidez" },
+                    { nombre: "Hidróxido de Al + Mg", para_que_sirve: "acidez" },
+                    { nombre: "Simeticona", para_que_sirve: "gases" },
+                    { nombre: "Metoclopramida", para_que_sirve: "náuseas / vómitos" },
+                    { nombre: "Ondansetrón", para_que_sirve: "náuseas / vómitos" },
+                    { nombre: "Domperidona", para_que_sirve: "náuseas / vómitos" },
+                    { nombre: "Loperamida", para_que_sirve: "diarrea" },
+                    { nombre: "Macrogol", para_que_sirve: "estreñimiento" },
+                    { nombre: "Lactulosa", para_que_sirve: "estreñimiento" },
+                    { nombre: "Bisacodilo", para_que_sirve: "estreñimiento" },
+                    { nombre: "Senósidos", para_que_sirve: "estreñimiento" }
+                ]
+            },
+            {
+                categoria: "Dolor, fiebre e inflamación",
+                icono: "💊",
+                medicamentos: [
+                    { nombre: "Paracetamol", para_que_sirve: "dolor / fiebre" },
+                    { nombre: "Ibuprofeno", para_que_sirve: "dolor / inflamación" },
+                    { nombre: "Dexketoprofeno", para_que_sirve: "dolor" },
+                    { nombre: "Naproxeno", para_que_sirve: "dolor / inflamación" },
+                    { nombre: "Diclofenaco", para_que_sirve: "dolor / inflamación" },
+                    { nombre: "Metamizol", para_que_sirve: "dolor / fiebre" },
+                    { nombre: "Tramadol", para_que_sirve: "dolor mod-intenso" },
+                    { nombre: "Morfina", para_que_sirve: "dolor intenso" }
+                ]
+            },
+            {
+                categoria: "Alergia",
+                icono: "🤧",
+                medicamentos: [
+                    { nombre: "Cetirizina", para_que_sirve: "alergia" },
+                    { nombre: "Loratadina", para_que_sirve: "alergia" },
+                    { nombre: "Ebastina", para_que_sirve: "alergia" },
+                    { nombre: "Desloratadina", para_que_sirve: "alergia" },
+                    { nombre: "Fexofenadina", para_que_sirve: "alergia" },
+                    { nombre: "Bilastina", para_que_sirve: "alergia" },
+                    { nombre: "Levocetirizina", para_que_sirve: "alergia" }
+                ]
+            },
+            {
+                categoria: "Respiratorio",
+                icono: "🫁",
+                medicamentos: [
+                    { nombre: "Salbutamol", para_que_sirve: "broncodilatador" },
+                    { nombre: "Formoterol", para_que_sirve: "broncodilatador" },
+                    { nombre: "Salmeterol", para_que_sirve: "broncodilatador" },
+                    { nombre: "Budesonida", para_que_sirve: "corticoide inhalado" },
+                    { nombre: "Fluticasona", para_que_sirve: "corticoide inhalado" },
+                    { nombre: "Beclometasona", para_que_sirve: "corticoide inhalado" },
+                    { nombre: "Acetilcisteína", para_que_sirve: "mucosidad" },
+                    { nombre: "Ambroxol", para_que_sirve: "mucosidad" },
+                    { nombre: "Bromhexina", para_que_sirve: "mucosidad" },
+                    { nombre: "Dextrometorfano", para_que_sirve: "tos seca" },
+                    { nombre: "Codeína", para_que_sirve: "tos / dolor" }
+                ]
+            },
+            {
+                categoria: "Antibióticos",
+                icono: "🦠",
+                medicamentos: [
+                    { nombre: "Amoxicilina", para_que_sirve: "antibiótico" },
+                    { nombre: "Amoxicilina + ác. clavulánico", para_que_sirve: "antibiótico" },
+                    { nombre: "Azitromicina", para_que_sirve: "antibiótico" },
+                    { nombre: "Claritromicina", para_que_sirve: "antibiótico" },
+                    { nombre: "Cefuroxima", para_que_sirve: "antibiótico" },
+                    { nombre: "Cefalexina", para_que_sirve: "antibiótico" },
+                    { nombre: "Ciprofloxacino", para_que_sirve: "antibiótico" },
+                    { nombre: "Levofloxacino", para_que_sirve: "antibiótico" },
+                    { nombre: "Doxiciclina", para_que_sirve: "antibiótico" },
+                    { nombre: "Fosfomicina", para_que_sirve: "infección urinaria" },
+                    { nombre: "Nitrofurantoína", para_que_sirve: "infección urinaria" },
+                    { nombre: "Metronidazol", para_que_sirve: "antibiótico" }
+                ]
+            },
+            {
+                categoria: "Anticoagulantes / Antiagregantes",
+                icono: "🩸",
+                medicamentos: [
+                    { nombre: "Acenocumarol", para_que_sirve: "anticoagulante" },
+                    { nombre: "Warfarina", para_que_sirve: "anticoagulante" },
+                    { nombre: "Apixabán", para_que_sirve: "anticoagulante" },
+                    { nombre: "Rivaroxabán", para_que_sirve: "anticoagulante" },
+                    { nombre: "Dabigatrán", para_que_sirve: "anticoagulante" },
+                    { nombre: "Edoxabán", para_que_sirve: "anticoagulante" },
+                    { nombre: "Clopidogrel", para_que_sirve: "antiagregante" },
+                    { nombre: "Ácido acetilsalicílico", para_que_sirve: "antiagregante" }
+                ]
+            },
+            {
+                categoria: "Depresión / Ansiedad",
+                icono: "🧠",
+                medicamentos: [
+                    { nombre: "Sertralina", para_que_sirve: "depresión / ansiedad" },
+                    { nombre: "Escitalopram", para_que_sirve: "depresión / ansiedad" },
+                    { nombre: "Fluoxetina", para_que_sirve: "depresión" },
+                    { nombre: "Paroxetina", para_que_sirve: "depresión / ansiedad" },
+                    { nombre: "Venlafaxina", para_que_sirve: "depresión / ansiedad" },
+                    { nombre: "Duloxetina", para_que_sirve: "depresión / dolor" },
+                    { nombre: "Mirtazapina", para_que_sirve: "depresión" },
+                    { nombre: "Lorazepam", para_que_sirve: "ansiedad" },
+                    { nombre: "Diazepam", para_que_sirve: "ansiedad / espasmos" },
+                    { nombre: "Alprazolam", para_que_sirve: "ansiedad" },
+                    { nombre: "Clonazepam", para_que_sirve: "ansiedad / epilepsia" },
+                    { nombre: "Zolpidem", para_que_sirve: "insomnio" }
+                ]
+            },
+            {
+                categoria: "Corticoides",
+                icono: "💉",
+                medicamentos: [
+                    { nombre: "Prednisona", para_que_sirve: "inflamación" },
+                    { nombre: "Prednisolona", para_que_sirve: "inflamación" },
+                    { nombre: "Dexametasona", para_que_sirve: "inflamación" },
+                    { nombre: "Metilprednisolona", para_que_sirve: "inflamación" },
+                    { nombre: "Hidrocortisona", para_que_sirve: "inflamación / alergias" }
+                ]
+            },
+            {
+                categoria: "Hongos",
+                icono: "🦠",
+                medicamentos: [
+                    { nombre: "Clotrimazol", para_que_sirve: "hongos" },
+                    { nombre: "Miconazol", para_que_sirve: "hongos" },
+                    { nombre: "Terbinafina", para_que_sirve: "hongos" },
+                    { nombre: "Fluconazol", para_que_sirve: "hongos" },
+                    { nombre: "Ketoconazol", para_que_sirve: "hongos" }
+                ]
+            },
+            {
+                categoria: "Piel",
+                icono: "🧴",
+                medicamentos: [
+                    { nombre: "Hidrocortisona", para_que_sirve: "inflamación / picor" },
+                    { nombre: "Mometasona", para_que_sirve: "inflamación piel" },
+                    { nombre: "Betametasona", para_que_sirve: "inflamación piel" },
+                    { nombre: "Clobetasol", para_que_sirve: "inflamación intensa" },
+                    { nombre: "Tacrolimus", para_que_sirve: "inflamación piel" },
+                    { nombre: "Aciclovir", para_que_sirve: "herpes" },
+                    { nombre: "Mupirocina", para_que_sirve: "infección bacteriana" }
+                ]
+            },
+            {
+                categoria: "Anticonceptivos",
+                icono: "💊",
+                medicamentos: [
+                    { nombre: "Etinilestradiol + prog.", para_que_sirve: "anticonceptivo" },
+                    { nombre: "Levonorgestrel", para_que_sirve: "anticonceptivo" },
+                    { nombre: "Desogestrel", para_que_sirve: "anticonceptivo" },
+                    { nombre: "Drospirenona", para_que_sirve: "anticonceptivo" },
+                    { nombre: "Etonogestrel", para_que_sirve: "anticonceptivo" },
+                    { nombre: "Medroxiprogesterona", para_que_sirve: "anticonceptivo" }
+                ]
+            },
+            {
+                categoria: "Sistema nervioso",
+                icono: "🧠",
+                medicamentos: [
+                    { nombre: "Pregabalina", para_que_sirve: "dolor neuropático / epilepsia" },
+                    { nombre: "Gabapentina", para_que_sirve: "dolor neuropático / epilepsia" },
+                    { nombre: "Levetiracetam", para_que_sirve: "epilepsia" },
+                    { nombre: "Lamotrigina", para_que_sirve: "epilepsia / bipolaridad" },
+                    { nombre: "Carbamazepina", para_que_sirve: "epilepsia / dolor" }
+                ]
+            },
+            {
+                categoria: "Osteoporosis",
+                icono: "🦴",
+                medicamentos: [
+                    { nombre: "Alendronato", para_que_sirve: "osteoporosis" },
+                    { nombre: "Risedronato", para_que_sirve: "osteoporosis" },
+                    { nombre: "Denosumab", para_que_sirve: "osteoporosis" },
+                    { nombre: "Ácido zoledrónico", para_que_sirve: "osteoporosis" }
+                ]
+            },
+            {
+                categoria: "Próstata",
+                icono: "👨",
+                medicamentos: [
+                    { nombre: "Tamsulosina", para_que_sirve: "síntomas próstata" },
+                    { nombre: "Finasterida", para_que_sirve: "próstata / pelo" },
+                    { nombre: "Dutasterida", para_que_sirve: "próstata" },
+                    { nombre: "Mirabegrón", para_que_sirve: "vejiga hiperactiva" },
+                    { nombre: "Solifenacina", para_que_sirve: "vejiga hiperactiva" }
+                ]
+            },
+            {
+                categoria: "Ojos",
+                icono: "👁️",
+                medicamentos: [
+                    { nombre: "Timolol", para_que_sirve: "glaucoma" },
+                    { nombre: "Latanoprost", para_que_sirve: "glaucoma" },
+                    { nombre: "Dorzolamida", para_que_sirve: "glaucoma" },
+                    { nombre: "Brimonidina", para_que_sirve: "glaucoma" },
+                    { nombre: "Lágrimas artificiales", para_que_sirve: "sequedad ocular" }
+                ]
+            },
+            {
+                categoria: "Otros",
+                icono: "💧",
+                medicamentos: [
+                    { nombre: "Alopurinol", para_que_sirve: "ácido úrico / gota" },
+                    { nombre: "Colchicina", para_que_sirve: "ataques de gota" },
+                    { nombre: "Hierro", para_que_sirve: "anemia" },
+                    { nombre: "Ácido fólico", para_que_sirve: "déficit ác. fólico" },
+                    { nombre: "Vitamina D", para_que_sirve: "déficit vitamina D" },
+                    { nombre: "Cianocobalamina", para_que_sirve: "déficit vitamina B12" },
+                    { nombre: "Magnesio", para_que_sirve: "déficit magnesio" }
+                ]
+            }
+        ];
+
+        const listaPlana = [];
+        datosFarmacia.forEach(cat => {
+            cat.medicamentos.forEach(med => {
+                listaPlana.push({
+                    nombre: med.nombre,
+                    para_que_sirve: med.para_que_sirve,
+                    categoria: cat.categoria,
+                    icono: cat.icono
+                });
+            });
+        });
+
+        function obtenerMedicamentoAleatorio() {
+            const indice = Math.floor(Math.random() * listaPlana.length);
+            const med = listaPlana[indice];
+
+            document.getElementById('random-cat').innerText = `${med.icono} ${med.categoria}`;
+            document.getElementById('random-nombre').innerText = med.nombre;
+            document.getElementById('random-uso').innerText = med.para_que_sirve;
+
+            const tarjeta = document.getElementById('tarjeta-random');
+            tarjeta.style.display = 'block';
+            
+            tarjeta.style.animation = 'none';
+            tarjeta.offsetHeight; 
+            tarjeta.style.animation = null; 
+
+            tarjeta.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function cerrarRandom() {
+            document.getElementById('tarjeta-random').style.display = 'none';
+        }
+
+        const contenedor = document.getElementById('contenedor-tarjetas');
+
+        datosFarmacia.forEach(item => {
+            const card = document.createElement('div');
+            card.className = 'card';
+
+            let itemsHTML = '';
+            item.medicamentos.forEach(med => {
+                itemsHTML += `
+                    <li class="med-item">
+                        <span class="med-nombre">${med.nombre}</span>
+                        <span class="med-indicacion">
+                            <span class="arrow">→</span> ${med.para_que_sirve}
+                        </span>
+                    </li>
+                `;
+            });
+
+            card.innerHTML = `
+                <div class="card-header">
+                    <span>${item.icono}</span>
+                    <span>${item.categoria.toUpperCase()}</span>
+                </div>
+                <div class="card-body">
+                    <ul class="med-list">
+                        ${itemsHTML}
+                    </ul>
+                </div>
+            `;
+
+            contenedor.appendChild(card);
+        });
+    </script>
+
+</body>
+</html>

@@ -37,42 +37,77 @@
             font-size: clamp(0.85em, 3vw, 1em);
         }
 
-        /* --- Panel de Repaso / Modo Aleatorio --- */
-        .random-container {
+        /* --- Panel Contenedor de Modos --- */
+        .interactive-container {
             max-width: 600px;
             margin: 0 auto 25px auto;
             text-align: center;
             padding: 0 5px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .buttons-group {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-action {
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 0.95em;
+            font-weight: 700;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: transform 0.15s ease, background-color 0.15s ease;
+            touch-action: manipulation;
+            flex: 1;
+            min-width: 140px;
+            max-width: 250px;
         }
 
         .btn-random {
             background-color: #27ae60;
-            color: white;
-            border: none;
-            padding: 14px 28px;
-            font-size: 1em;
-            font-weight: 700;
-            border-radius: 30px;
-            cursor: pointer;
-            box-shadow: 0 4px 10px rgba(39, 174, 96, 0.3);
-            transition: transform 0.15s ease, background-color 0.15s ease;
-            width: 100%;
-            max-width: 320px;
-            touch-action: manipulation;
+            box-shadow: 0 4px 10px rgba(39, 174, 96, 0.25);
         }
 
-        .btn-random:active {
+        .btn-quiz {
+            background-color: #8e44ad;
+            box-shadow: 0 4px 10px rgba(142, 68, 173, 0.25);
+        }
+
+        .btn-action:active {
             transform: scale(0.97);
-            background-color: #219150;
         }
 
+        /* --- Tarjeta Aleatorio --- */
         .random-card {
             display: none;
             background-color: #ffffff;
             border: 2px solid #27ae60;
             border-radius: 12px;
             padding: 20px 16px;
-            margin-top: 16px;
+            width: 100%;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            animation: fadeIn 0.25s ease-out;
+            position: relative;
+            text-align: left;
+        }
+
+        /* --- Tarjeta Quiz --- */
+        .quiz-card {
+            display: none;
+            background-color: #ffffff;
+            border: 2px solid #8e44ad;
+            border-radius: 12px;
+            padding: 20px 16px;
+            width: 100%;
             box-shadow: 0 8px 20px rgba(0,0,0,0.08);
             animation: fadeIn 0.25s ease-out;
             position: relative;
@@ -84,10 +119,10 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .random-card .categoria-tag {
+        .categoria-tag {
             display: inline-block;
-            background-color: #e8f8f5;
-            color: #16a085;
+            background-color: #f3e5f5;
+            color: #8e44ad;
             padding: 4px 10px;
             border-radius: 12px;
             font-size: 0.8em;
@@ -96,18 +131,73 @@
             text-transform: uppercase;
         }
 
-        .random-card .med-title {
+        .tag-random {
+            background-color: #e8f8f5;
+            color: #16a085;
+        }
+
+        .med-title {
             font-size: 1.35em;
             font-weight: bold;
             color: #2c3e50;
-            margin-bottom: 6px;
+            margin-bottom: 12px;
             padding-right: 25px;
         }
 
-        .random-card .med-uso {
-            font-size: 1em;
+        .quiz-score {
+            position: absolute;
+            top: 12px;
+            right: 48px;
+            font-size: 0.85em;
+            font-weight: bold;
             color: #7f8c8d;
-            line-height: 1.4;
+            background: #f0f3f4;
+            padding: 4px 8px;
+            border-radius: 10px;
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .btn-option {
+            background-color: #f8f9fa;
+            border: 1.5px solid #dcdde1;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.9em;
+            color: #2c3e50;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            font-weight: 500;
+        }
+
+        .btn-option:active {
+            background-color: #e2e6ea;
+        }
+
+        .btn-option.correct {
+            background-color: #d4edda !important;
+            border-color: #28a745 !important;
+            color: #155724 !important;
+            font-weight: bold;
+        }
+
+        .btn-option.incorrect {
+            background-color: #f8d7da !important;
+            border-color: #dc3545 !important;
+            color: #721c24 !important;
+        }
+
+        .quiz-feedback {
+            margin-top: 12px;
+            font-weight: bold;
+            font-size: 0.95em;
+            min-height: 24px;
         }
 
         .btn-close {
@@ -116,8 +206,8 @@
             right: 12px;
             background: #f0f3f4;
             border: none;
-            width: 32px;
-            height: 32px;
+            width: 30px;
+            height: 30px;
             border-radius: 50%;
             font-size: 1.1em;
             color: #7f8c8d;
@@ -127,9 +217,17 @@
             justify-content: center;
         }
 
-        .btn-close:active {
-            background-color: #e74c3c;
-            color: #ffffff;
+        .btn-next-quiz {
+            display: none;
+            margin-top: 12px;
+            background-color: #8e44ad;
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
         }
 
         /* --- Grid Responsivo --- */
@@ -223,10 +321,6 @@
                 gap: 20px;
             }
 
-            .random-card {
-                padding: 20px;
-            }
-
             .med-item {
                 font-size: 0.95em;
             }
@@ -240,15 +334,30 @@
         <p class="subtitle">Consulta por categorías e indicaciones de uso</p>
     </header>
 
-    <!-- Sección de Medicamento Aleatorio -->
-    <div class="random-container">
-        <button class="btn-random" onclick="obtenerMedicamentoAleatorio()">🎲 Medicamento Aleatorio</button>
+    <!-- Sección de Botones e Modos Interactivos -->
+    <div class="interactive-container">
+        <div class="buttons-group">
+            <button class="btn-action btn-random" onclick="obtenerMedicamentoAleatorio()">🎲 Aleatorio</button>
+            <button class="btn-action btn-quiz" onclick="iniciarQuiz()">❓ Pregúntame</button>
+        </div>
         
+        <!-- Tarjeta Modo Aleatorio -->
         <div class="random-card" id="tarjeta-random">
-            <button class="btn-close" onclick="cerrarRandom()">✕</button>
-            <span class="categoria-tag" id="random-cat"></span>
+            <button class="btn-close" onclick="cerrarModos()">✕</button>
+            <span class="categoria-tag tag-random" id="random-cat"></span>
             <div class="med-title" id="random-nombre"></div>
             <div class="med-uso">Sirve para: <strong id="random-uso" style="color: #27ae60;"></strong></div>
+        </div>
+
+        <!-- Tarjeta Modo Quiz -->
+        <div class="quiz-card" id="tarjeta-quiz">
+            <button class="btn-close" onclick="cerrarModos()">✕</button>
+            <div class="quiz-score" id="quiz-score">Aciertos: 0</div>
+            <span class="categoria-tag" id="quiz-cat"></span>
+            <div class="med-title" id="quiz-pregunta">¿Para qué sirve este medicamento?</div>
+            <div class="quiz-options" id="quiz-options"></div>
+            <div class="quiz-feedback" id="quiz-feedback"></div>
+            <button class="btn-next-quiz" id="btn-next-quiz" onclick="iniciarQuiz()">Siguiente Pregunta ➔</button>
         </div>
     </div>
 
@@ -528,7 +637,10 @@
             }
         ];
 
+        // Lista plana para búsquedas rápidas
         const listaPlana = [];
+        const conjuntoUsos = new Set();
+
         datosFarmacia.forEach(cat => {
             cat.medicamentos.forEach(med => {
                 listaPlana.push({
@@ -537,10 +649,21 @@
                     categoria: cat.categoria,
                     icono: cat.icono
                 });
+                conjuntoUsos.add(med.para_que_sirve);
             });
         });
 
+        const arrayUsos = Array.from(conjuntoUsos);
+        let aciertos = 0;
+
+        function cerrarModos() {
+            document.getElementById('tarjeta-random').style.display = 'none';
+            document.getElementById('tarjeta-quiz').style.display = 'none';
+        }
+
+        // --- MODO ALEATORIO ---
         function obtenerMedicamentoAleatorio() {
+            cerrarModos();
             const indice = Math.floor(Math.random() * listaPlana.length);
             const med = listaPlana[indice];
 
@@ -550,18 +673,76 @@
 
             const tarjeta = document.getElementById('tarjeta-random');
             tarjeta.style.display = 'block';
-            
-            tarjeta.style.animation = 'none';
-            tarjeta.offsetHeight; 
-            tarjeta.style.animation = null; 
-
             tarjeta.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
 
-        function cerrarRandom() {
-            document.getElementById('tarjeta-random').style.display = 'none';
+        // --- MODO QUIZ / ADIVINA ---
+        function iniciarQuiz() {
+            cerrarModos();
+
+            const medCorrecto = listaPlana[Math.floor(Math.random() * listaPlana.length)];
+            
+            // Generar 3 opciones incorrectas
+            const opciones = [medCorrecto.para_que_sirve];
+            while (opciones.length < 4) {
+                const usoAleatorio = arrayUsos[Math.floor(Math.random() * arrayUsos.length)];
+                if (!opciones.includes(usoAleatorio)) {
+                    opciones.push(usoAleatorio);
+                }
+            }
+
+            // Mezclar opciones
+            opciones.sort(() => Math.random() - 0.5);
+
+            document.getElementById('quiz-cat').innerText = `❓ PREGUNTA DE REPASO`;
+            document.getElementById('quiz-pregunta').innerText = `¿Para qué sirve el/la "${medCorrecto.nombre}"?`;
+            document.getElementById('quiz-feedback').innerText = '';
+            document.getElementById('btn-next-quiz').style.display = 'none';
+            document.getElementById('quiz-score').innerText = `Aciertos: ${aciertos}`;
+
+            const contOpciones = document.getElementById('quiz-options');
+            contOpciones.innerHTML = '';
+
+            opciones.forEach(opcion => {
+                const btn = document.createElement('button');
+                btn.className = 'btn-option';
+                btn.innerText = opcion;
+                btn.onclick = () => responderQuiz(btn, opcion, medCorrecto.para_que_sirve);
+                contOpciones.appendChild(btn);
+            });
+
+            const tarjetaQuiz = document.getElementById('tarjeta-quiz');
+            tarjetaQuiz.style.display = 'block';
+            tarjetaQuiz.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
 
+        function responderQuiz(btnSeleccionado, respuestaDada, respuestaCorrecta) {
+            const botones = document.querySelectorAll('.btn-option');
+            botones.forEach(b => b.disabled = true); // Bloquear botones tras responder
+
+            const feedback = document.getElementById('quiz-feedback');
+
+            if (respuestaDada === respuestaCorrecta) {
+                btnSeleccionado.classList.add('correct');
+                feedback.innerHTML = '<span style="color: #27ae60;">¡Correcto! 🎉</span>';
+                aciertos++;
+                document.getElementById('quiz-score').innerText = `Aciertos: ${aciertos}`;
+            } else {
+                btnSeleccionado.classList.add('incorrect');
+                feedback.innerHTML = `<span style="color: #e74c3c;">Incorrecto ❌. Sirve para: <strong>${respuestaCorrecta}</strong></span>`;
+                
+                // Mostrar la opción correcta
+                botones.forEach(b => {
+                    if (b.innerText === respuestaCorrecta) {
+                        b.classList.add('correct');
+                    }
+                });
+            }
+
+            document.getElementById('btn-next-quiz').style.display = 'block';
+        }
+
+        // Renderizado del Grid
         const contenedor = document.getElementById('contenedor-tarjetas');
 
         datosFarmacia.forEach(item => {
